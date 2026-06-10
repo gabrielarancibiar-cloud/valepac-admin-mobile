@@ -24,7 +24,7 @@ input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:16px;pad
 .ghost{border:0;background:#eef6ff;color:var(--blue);border-radius:16px;padding:13px 16px;font-weight:900}
 .msg{margin-top:12px;border-radius:16px;padding:12px;font-weight:800}.error{background:#fee2e2;color:#991b1b}.ok{background:#dcfce7;color:#166534}
 .app{min-height:100vh;padding-bottom:86px}.header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(148,163,184,.25);padding:14px 16px}
-.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.header h2{margin:0;color:var(--blue);font-size:18px}.header small{display:block;color:var(--muted);font-weight:800;margin-top:3px}.user{font-size:12px;background:#eef6ff;color:var(--blue);border:1px solid #dbeafe;border-radius:999px;padding:8px 10px;font-weight:950}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.header h2{margin:0;color:var(--blue);font-size:18px}.header small{display:block;color:var(--muted);font-weight:800;margin-top:3px}.session{display:flex;align-items:center;gap:10px}.session-user{text-align:right;line-height:1.15}.session-user b{display:block;color:var(--blue);font-size:13px}.session-user small{font-size:11px;color:var(--muted);font-weight:900}.logout-btn{border:1px solid #bfdbfe;background:#fff;color:var(--blue2);border-radius:14px;padding:10px 12px;font-weight:950;white-space:nowrap}
 .main{padding:16px;max-width:760px;margin:0 auto}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.kpi{background:#fff;border:1px solid var(--border);border-radius:20px;padding:14px;box-shadow:0 12px 34px rgba(15,23,42,.08)}.kpi small{color:var(--muted);font-weight:900}.kpi b{display:block;font-size:24px;color:var(--blue);margin-top:4px}
 .grid-menu{display:grid;grid-template-columns:1fr;gap:12px}.tile{text-align:left;border:0;border-radius:24px;padding:18px;background:#fff;box-shadow:0 18px 48px rgba(15,23,42,.10);color:var(--blue);font-weight:950}.tile span{display:inline-block;font-size:30px;margin-right:10px}.tile small{display:block;color:var(--muted);font-weight:800;margin-top:8px}
 .tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-top:1px solid rgba(148,163,184,.26);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:30}
@@ -40,7 +40,7 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
   <div class="brand">VALEPAC · EDS 40098</div>
   <div class="hero">
     <h1>Admin Mobile</h1>
-    <p>Versión inicial enfocada en Bitácora, Nómina e Historial de Anotaciones.</p>
+    <p>Admin Mobile sincronizado con permisos VALEPAC: Bitácora, Nómina e Historial de Anotaciones.</p>
   </div>
   <div class="card">
     <label>Usuario</label>
@@ -57,7 +57,10 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
 <header class="header">
   <div class="header-row">
     <div><h2 id="viewTitle">VALEPAC Admin</h2><small id="viewSub">Mobile v1</small></div>
-    <div class="user" onclick="logout()">Salir</div>
+    <div class="session">
+      <div class="session-user"><b id="sessionName">Usuario</b><small id="sessionRole">Rol</small></div>
+      <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+    </div>
   </div>
 </header>
 
@@ -164,14 +167,36 @@ const bucket='documentos-sec';
 let currentUser=null,bits=[],bitHist=[],workers=[],notes=[];
 
 
+function permListAllows(container,key){
+  if(!container)return false;
+  if(Array.isArray(container))return container.includes(key);
+  return !!container[key];
+}
+function normalizeRoleName(role){
+  const r=String(role||'').toLowerCase();
+  if(r==='admin'||r==='administrador')return 'Administrador';
+  if(r==='supervisor')return 'Supervisor';
+  if(r==='consulta')return 'Consulta';
+  if(r==='atendedor')return 'Atendedor';
+  return role||'-';
+}
 function hasPlatform(p){
-  return !!(currentUser?.permisos?.plataformas?.[p] || currentUser?.permisos?.[p]);
+  if(!currentUser)return false;
+  const permisos=currentUser.permisos||{};
+  if(currentUser.usuario==='gabrielarancibia')return true;
+  return permListAllows(permisos.plataformas,p) || permListAllows(permisos,p);
 }
 function hasModule(m){
-  return !!(currentUser?.permisos?.modulos?.[m] || currentUser?.permisos?.[m]);
+  if(!currentUser)return false;
+  const permisos=currentUser.permisos||{};
+  if(currentUser.usuario==='gabrielarancibia')return true;
+  return permListAllows(permisos.modulos,m) || permListAllows(permisos,m);
 }
 function canAction(a){
-  return !!(currentUser?.permisos?.acciones?.[a] || currentUser?.permisos?.[a]);
+  if(!currentUser)return false;
+  const permisos=currentUser.permisos||{};
+  if(currentUser.usuario==='gabrielarancibia')return true;
+  return permListAllows(permisos.acciones,a) || permListAllows(permisos,a);
 }
 function saveSession(){
   if(currentUser)localStorage.setItem('valepac_admin_mobile_session',JSON.stringify(currentUser));
@@ -224,6 +249,8 @@ function badge(s){let c='';if(['Alta','Negativa'].includes(s))c=' b-red';if(['Po
 
 
 function applyPermissions(){
+  if(document.getElementById('sessionName'))sessionName.textContent=currentUser?.nombre||currentUser?.usuario||'Usuario';
+  if(document.getElementById('sessionRole'))sessionRole.textContent=normalizeRoleName(currentUser?.rol);
   const bitAllowed=hasModule('bitacora');
   const nominaAllowed=hasModule('nomina');
   const notasAllowed=hasModule('historial_anotaciones');
@@ -241,7 +268,7 @@ function applyPermissions(){
   document.querySelectorAll('[data-create-action]').forEach(el=>el.style.display=canCreate?'block':'none');
 }
 
-async function loadAll(){const jobs=[];if(hasModule('bitacora'))jobs.push(loadBitacora());if(hasModule('nomina'))jobs.push(loadNomina());if(hasModule('historial_anotaciones'))jobs.push(loadNotas());await Promise.all(jobs);renderHome()}
+async function loadAll(){const jobs=[];if(hasModule('bitacora'))jobs.push(loadBitacora());if(hasModule('nomina'))jobs.push(loadNomina());if(hasModule('historial_anotaciones'))jobs.push(loadNotas());await Promise.allSettled(jobs);renderHome()}
 function renderHome(){
   kBit.textContent=bits.filter(b=>!['Cerrado','Atendido'].includes(b.estado)).length;
   kAt.textContent=workers.filter(w=>(w.estado||'Activo')==='Activo').length;
