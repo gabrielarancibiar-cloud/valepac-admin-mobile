@@ -24,11 +24,11 @@ input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:16px;pad
 .ghost{border:0;background:#eef6ff;color:var(--blue);border-radius:16px;padding:13px 16px;font-weight:900}
 .msg{margin-top:12px;border-radius:16px;padding:12px;font-weight:800}.error{background:#fee2e2;color:#991b1b}.ok{background:#dcfce7;color:#166534}
 .app{min-height:100vh;padding-bottom:86px}.header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(148,163,184,.25);padding:14px 16px}
-.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.header h2{margin:0;color:var(--blue);font-size:18px}.header small{display:block;color:var(--muted);font-weight:800;margin-top:3px}.session{display:flex;align-items:center;gap:10px}.session-user{text-align:right;line-height:1.15}.session-user b{display:block;color:var(--blue);font-size:13px}.session-user small{font-size:11px;color:var(--muted);font-weight:900}.logout-btn{border:1px solid #bfdbfe;background:#fff;color:var(--blue2);border-radius:14px;padding:10px 12px;font-weight:950;white-space:nowrap}
-.main{padding:16px;max-width:760px;margin:0 auto}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.kpi{background:#fff;border:1px solid var(--border);border-radius:20px;padding:14px;box-shadow:0 12px 34px rgba(15,23,42,.08)}.kpi small{color:var(--muted);font-weight:900}.kpi b{display:block;font-size:24px;color:var(--blue);margin-top:4px}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.header h2{margin:0;color:var(--blue);font-size:18px}.header small{display:block;color:var(--muted);font-weight:800;margin-top:3px}.user{font-size:12px;background:#eef6ff;color:var(--blue);border:1px solid #dbeafe;border-radius:999px;padding:8px 10px;font-weight:950}
+.main{padding:16px;max-width:760px;margin:0 auto}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}.kpi{background:#fff;border:1px solid var(--border);border-radius:20px;padding:14px;box-shadow:0 12px 34px rgba(15,23,42,.08)}.kpi small{color:var(--muted);font-weight:900}.kpi b{display:block;font-size:24px;color:var(--blue);margin-top:4px}
 .grid-menu{display:grid;grid-template-columns:1fr;gap:12px}.tile{text-align:left;border:0;border-radius:24px;padding:18px;background:#fff;box-shadow:0 18px 48px rgba(15,23,42,.10);color:var(--blue);font-weight:950}.tile span{display:inline-block;font-size:30px;margin-right:10px}.tile small{display:block;color:var(--muted);font-weight:800;margin-top:8px}
-.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-top:1px solid rgba(148,163,184,.26);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:30}
-.tabs button{border:0;background:transparent;border-radius:16px;padding:9px 4px;color:var(--muted);font-size:12px;font-weight:950}.tabs button.active{background:linear-gradient(135deg,rgba(37,99,235,.13),rgba(56,189,248,.13));color:var(--blue)}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-top:1px solid rgba(148,163,184,.26);display:flex;gap:6px;overflow-x:auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:30}
+.tabs button{border:0;background:transparent;border-radius:16px;padding:9px 12px;color:var(--muted);font-size:12px;font-weight:950;white-space:nowrap;min-width:max-content}.tabs button.active{background:linear-gradient(135deg,rgba(37,99,235,.13),rgba(56,189,248,.13));color:var(--blue)}
 .title{font-weight:950;color:#071f3e}.sub{font-size:12px;color:var(--muted);font-weight:700;margin-top:4px}.badge{display:inline-flex;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:950;border:1px solid #cbd5e1;background:#eef6ff;color:#0b2f5b;margin:2px}.b-red{background:#fee2e2;color:#991b1b;border-color:#fecaca}.b-green{background:#dcfce7;color:#166534;border-color:#bbf7d0}.b-yellow{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
 .actions{display:grid;gap:10px;margin-top:12px}.actions.two{grid-template-columns:1fr 1fr}.empty{padding:18px;border-radius:18px;background:#f8fbff;color:var(--muted);font-weight:800;text-align:center}
 .item{border-left:3px solid var(--blue2);padding:12px;margin-bottom:10px;background:#f8fbff;border-radius:12px}.photo{width:64px;height:64px;border-radius:18px;object-fit:cover;background:#eef4fb}.worker{display:grid;grid-template-columns:74px 1fr;gap:12px;align-items:center}
@@ -40,7 +40,7 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
   <div class="brand">VALEPAC · EDS 40098</div>
   <div class="hero">
     <h1>Admin Mobile</h1>
-    <p>Admin Mobile sincronizado con permisos VALEPAC: Bitácora, Nómina e Historial de Anotaciones.</p>
+    <p>Versión inicial enfocada en Bitácora, Nómina e Historial de Anotaciones.</p>
   </div>
   <div class="card">
     <label>Usuario</label>
@@ -57,24 +57,27 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
 <header class="header">
   <div class="header-row">
     <div><h2 id="viewTitle">VALEPAC Admin</h2><small id="viewSub">Mobile v1</small></div>
-    <div class="session">
-      <div class="session-user"><b id="sessionName">Usuario</b><small id="sessionRole">Rol</small></div>
-      <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
-    </div>
+    <div class="user" onclick="logout()">Salir</div>
   </div>
 </header>
 
 <main class="main">
 <section id="homeView">
   <div class="kpis">
-    <div class="kpi"><small>Eventos abiertos</small><b id="kBit">0</b></div>
+    <div class="kpi"><small>Documentos SEC</small><b id="kSec">0</b></div>
+    <div class="kpi"><small>Bitácoras</small><b id="kBit">0</b></div>
+    <div class="kpi"><small>VNA</small><b id="kVna">0</b></div>
+    <div class="kpi"><small>Tickets</small><b id="kTickets">0</b></div>
     <div class="kpi"><small>Atendedores</small><b id="kAt">0</b></div>
     <div class="kpi"><small>Anotaciones</small><b id="kNotas">0</b></div>
   </div>
   <div class="grid-menu">
-    <button class="tile" onclick="showView('bitView')"><span>📝</span>Bitácora <small>Eventos, seguimiento, archivos y estado.</small></button>
-    <button class="tile" onclick="showView('nominaView')"><span>👥</span>Nómina de Atendedores <small>Ficha, foto, estado e historial individual.</small></button>
-    <button class="tile" onclick="showView('notasView')"><span>📌</span>Historial de Anotaciones <small>Vista general de positivas y negativas.</small></button>
+    <button class="tile" data-module="sec" onclick="showView('secView')"><span>🛡️</span>SEC <small>Documentos, vencimientos y carga de PDF.</small></button>
+    <button class="tile" data-module="bitacora" onclick="showView('bitView')"><span>📝</span>Bitácora <small>Eventos, seguimiento, archivos y estado.</small></button>
+    <button class="tile" data-module="vna" onclick="showView('vnaView')"><span>📈</span>VNA <small>Ventas no abonadas, avances y respaldos.</small></button>
+    <button class="tile" data-module="ticket_atendedor" onclick="showView('ticketView')"><span>🎫</span>Ticket Atendedor <small>Solicitudes internas y cambios de estado.</small></button>
+    <button class="tile" data-module="nomina" onclick="showView('nominaView')"><span>👥</span>Nómina de Atendedores <small>Ficha, foto, estado e historial individual.</small></button>
+    <button class="tile" data-module="historial_anotaciones" onclick="showView('notasView')"><span>📌</span>Historial de Anotaciones <small>Vista general de positivas y negativas.</small></button>
   </div>
 </section>
 
@@ -98,6 +101,65 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
 </section>
 
 <section id="bitDetailView" class="hidden"><div id="bitDetail"></div></section>
+
+
+<section id="secView" class="hidden">
+  <div class="actions two"><button class="secondary" onclick="loadSecDocs()">Actualizar</button><button class="ghost" onclick="showView('homeView')">Inicio</button></div>
+  <input id="secSearch" placeholder="Buscar documento SEC" oninput="renderSecDocs()" style="margin:14px 0"/>
+  <div id="secList"></div>
+</section>
+
+<section id="secDetailView" class="hidden"><div id="secDetail"></div></section>
+
+<section id="vnaView" class="hidden">
+  <div class="actions two"><button data-create-action class="primary" onclick="showVnaForm()">Nuevo VNA</button><button class="secondary" onclick="loadVna()">Actualizar</button></div>
+  <input id="vnaSearch" placeholder="Buscar VNA" oninput="renderVna()" style="margin:14px 0"/>
+  <div id="vnaList"></div>
+</section>
+
+<section id="vnaFormView" class="hidden">
+  <div class="card">
+    <h2 style="margin-top:0">Nuevo VNA</h2>
+    <label>N° requerimiento</label><input id="vnaReq"/>
+    <label>Surtidor</label><input id="vnaSurtidor"/>
+    <label>Folio DTE</label><input id="vnaFolioDte"/>
+    <label>Monto</label><input id="vnaMonto" type="number"/>
+    <label>Producto</label><select id="vnaProducto"><option>Diesel</option><option>Gasolina 93</option><option>Gasolina 95</option><option>Gasolina 97</option><option>Bluemax</option><option>Otro</option></select>
+    <label>Medio de pago</label><select id="vnaMedioPago"><option>Débito</option><option>Crédito</option><option>App Copec</option><option>Transferencia</option><option>Otro</option></select>
+    <label>Fecha/hora venta</label><input id="vnaFechaHora" type="datetime-local"/>
+    <label>Atendedor</label><input id="vnaAtendedor"/>
+    <label>Conductor</label><input id="vnaNombreConductor"/>
+    <label>RUT conductor</label><input id="vnaRutConductor"/>
+    <label>Detalle</label><textarea id="vnaDetalle"></textarea>
+    <label>Archivo / foto</label><input id="vnaArchivoInicial" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,.xlsx,.xls" capture="environment"/>
+    <button class="primary" onclick="createVna()">Guardar VNA</button>
+    <div id="vnaMsg"></div>
+  </div>
+</section>
+
+<section id="vnaDetailView" class="hidden"><div id="vnaDetail"></div></section>
+
+<section id="ticketView" class="hidden">
+  <div class="actions two"><button data-create-action class="primary" onclick="showTicketForm()">Nuevo ticket</button><button class="secondary" onclick="loadTickets()">Actualizar</button></div>
+  <input id="ticketSearch" placeholder="Buscar ticket" oninput="renderTickets()" style="margin:14px 0"/>
+  <div id="ticketList"></div>
+</section>
+
+<section id="ticketFormView" class="hidden">
+  <div class="card">
+    <h2 style="margin-top:0">Nuevo Ticket Atendedor</h2>
+    <label>Atendedor</label><select id="ticketAtendedor"></select>
+    <label>Tipo</label><select id="ticketTipo"><option>Ropa / Uniforme</option><option>Vacaciones</option><option>Día de permiso</option><option>Cambio de turno</option><option>Certificado / Documento</option><option>Capacitación</option><option>Pago / remuneración</option><option>Otro</option></select>
+    <label>Prioridad</label><select id="ticketPrioridad"><option>Normal</option><option>Alta</option><option>Urgente</option></select>
+    <label>Título</label><input id="ticketTitulo"/>
+    <label>Detalle</label><textarea id="ticketDetalle"></textarea>
+    <label>Archivo / foto</label><input id="ticketArchivo" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,.xlsx,.xls" capture="environment"/>
+    <button class="primary" onclick="createTicket()">Guardar ticket</button>
+    <div id="ticketMsg"></div>
+  </div>
+</section>
+
+<section id="ticketDetailView" class="hidden"><div id="ticketDetail"></div></section>
 
 <section id="nominaView" class="hidden">
   <div class="actions two">
@@ -153,7 +215,10 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
 
 <nav class="tabs">
   <button id="tabHome" class="active" onclick="showView('homeView')">Inicio</button>
+  <button id="tabSec" onclick="showView('secView')">SEC</button>
   <button id="tabBit" onclick="showView('bitView')">Bitácora</button>
+  <button id="tabVna" onclick="showView('vnaView')">VNA</button>
+  <button id="tabTicket" onclick="showView('ticketView')">Tickets</button>
   <button id="tabNomina" onclick="showView('nominaView')">Nómina</button>
   <button id="tabNotas" onclick="showView('notasView')">Anotaciones</button>
 </nav>
@@ -164,40 +229,22 @@ const SUPABASE_URL='https://emyskqnsyspzjrguycjk.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVteXNrcW5zeXNwempyZ3V5Y2prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDg5NDcsImV4cCI6MjA5NTQ4NDk0N30.bLCSwgLCop1Gg4rCbunFe4YCP_KHxIIFGF28vR0XD-0';
 const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const bucket='documentos-sec';
-let currentUser=null,bits=[],bitHist=[],workers=[],notes=[];
+let currentUser=null,docs=[],bits=[],bitHist=[],vnas=[],vnaHist=[],tickets=[],ticketHist=[],workers=[],notes=[],selectedDoc=null,selectedVna=null,selectedTicket=null;
 
 
-function permListAllows(container,key){
-  if(!container)return false;
-  if(Array.isArray(container))return container.includes(key);
-  return !!container[key];
+function permHas(group,key){
+  const p=currentUser?.permisos||{};
+  const g=p[group];
+  if(Array.isArray(g))return g.includes(key);
+  if(g&&typeof g==='object')return !!g[key];
+  return !!p[key];
 }
-function normalizeRoleName(role){
-  const r=String(role||'').toLowerCase();
-  if(r==='admin'||r==='administrador')return 'Administrador';
-  if(r==='supervisor')return 'Supervisor';
-  if(r==='consulta')return 'Consulta';
-  if(r==='atendedor')return 'Atendedor';
-  return role||'-';
-}
-function hasPlatform(p){
-  if(!currentUser)return false;
-  const permisos=currentUser.permisos||{};
-  if(currentUser.usuario==='gabrielarancibia')return true;
-  return permListAllows(permisos.plataformas,p) || permListAllows(permisos,p);
-}
+function hasPlatform(p){return permHas('plataformas',p)}
 function hasModule(m){
-  if(!currentUser)return false;
-  const permisos=currentUser.permisos||{};
-  if(currentUser.usuario==='gabrielarancibia')return true;
-  return permListAllows(permisos.modulos,m) || permListAllows(permisos,m);
+  if(m==='ticket_atendedor')return permHas('modulos','ticket_atendedor')||permHas('modulos','ticket');
+  return permHas('modulos',m);
 }
-function canAction(a){
-  if(!currentUser)return false;
-  const permisos=currentUser.permisos||{};
-  if(currentUser.usuario==='gabrielarancibia')return true;
-  return permListAllows(permisos.acciones,a) || permListAllows(permisos,a);
-}
+function canAction(a){return permHas('acciones',a)}
 function saveSession(){
   if(currentUser)localStorage.setItem('valepac_admin_mobile_session',JSON.stringify(currentUser));
 }
@@ -229,7 +276,7 @@ async function loginApp(){
   }
   if(user && p===user.password){
     currentUser={usuario:user.usuario,nombre:user.nombre||user.usuario,rol:user.rol,permisos:user.permisos||{}};
-    const hasAnyMobileModule=hasModule('bitacora')||hasModule('nomina')||hasModule('historial_anotaciones');
+    const hasAnyMobileModule=hasModule('sec')||hasModule('bitacora')||hasModule('vna')||hasModule('ticket_atendedor')||hasModule('nomina')||hasModule('historial_anotaciones');
     if(hasPlatform('admin_mobile') && hasAnyMobileModule){
       saveSession();
       login.classList.add('hidden');
@@ -249,39 +296,172 @@ function badge(s){let c='';if(['Alta','Negativa'].includes(s))c=' b-red';if(['Po
 
 
 function applyPermissions(){
-  if(document.getElementById('sessionName'))sessionName.textContent=currentUser?.nombre||currentUser?.usuario||'Usuario';
-  if(document.getElementById('sessionRole'))sessionRole.textContent=normalizeRoleName(currentUser?.rol);
-  const bitAllowed=hasModule('bitacora');
-  const nominaAllowed=hasModule('nomina');
-  const notasAllowed=hasModule('historial_anotaciones');
-
-  tabBit.style.display=bitAllowed?'block':'none';
-  tabNomina.style.display=nominaAllowed?'block':'none';
-  tabNotas.style.display=notasAllowed?'block':'none';
-
-  const tiles=document.querySelectorAll('.tile');
-  if(tiles[0])tiles[0].style.display=bitAllowed?'block':'none';
-  if(tiles[1])tiles[1].style.display=nominaAllowed?'block':'none';
-  if(tiles[2])tiles[2].style.display=notasAllowed?'block':'none';
-
+  const map={
+    sec:hasModule('sec'),
+    bitacora:hasModule('bitacora'),
+    vna:hasModule('vna'),
+    ticket_atendedor:hasModule('ticket_atendedor'),
+    nomina:hasModule('nomina'),
+    historial_anotaciones:hasModule('historial_anotaciones')
+  };
+  if(tabSec)tabSec.style.display=map.sec?'block':'none';
+  if(tabBit)tabBit.style.display=map.bitacora?'block':'none';
+  if(tabVna)tabVna.style.display=map.vna?'block':'none';
+  if(tabTicket)tabTicket.style.display=map.ticket_atendedor?'block':'none';
+  if(tabNomina)tabNomina.style.display=map.nomina?'block':'none';
+  if(tabNotas)tabNotas.style.display=map.historial_anotaciones?'block':'none';
+  document.querySelectorAll('[data-module]').forEach(el=>{
+    const mod=el.dataset.module;
+    el.style.display=map[mod]?'block':'none';
+  });
   const canCreate=canAction('crear');
   document.querySelectorAll('[data-create-action]').forEach(el=>el.style.display=canCreate?'block':'none');
+  const userPill=document.querySelector('.user');
+  if(userPill)userPill.textContent=(currentUser?.nombre||currentUser?.usuario||'Usuario')+' · Salir';
 }
 
-async function loadAll(){const jobs=[];if(hasModule('bitacora'))jobs.push(loadBitacora());if(hasModule('nomina'))jobs.push(loadNomina());if(hasModule('historial_anotaciones'))jobs.push(loadNotas());await Promise.allSettled(jobs);renderHome()}
-function renderHome(){
-  kBit.textContent=bits.filter(b=>!['Cerrado','Atendido'].includes(b.estado)).length;
-  kAt.textContent=workers.filter(w=>(w.estado||'Activo')==='Activo').length;
-  kNotas.textContent=notes.length;
+async function loadAll(){
+  const jobs=[];
+  if(hasModule('sec'))jobs.push(loadSecDocs());
+  if(hasModule('bitacora'))jobs.push(loadBitacora());
+  if(hasModule('vna'))jobs.push(loadVna());
+  if(hasModule('ticket_atendedor'))jobs.push(loadTickets());
+  if(hasModule('nomina')||hasModule('ticket_atendedor')||hasModule('historial_anotaciones'))jobs.push(loadNomina());
+  if(hasModule('historial_anotaciones'))jobs.push(loadNotas());
+  await Promise.allSettled(jobs);
+  renderHome();
 }
-function showView(id){const map={bitView:'bitacora',bitFormView:'bitacora',bitDetailView:'bitacora',nominaView:'nomina',workerFormView:'nomina',noteFormView:'historial_anotaciones',workerDetailView:'nomina',notasView:'historial_anotaciones'};if(map[id]&&!hasModule(map[id])){alert('Usuario sin acceso a este módulo.');return;}
-  ['homeView','bitView','bitFormView','bitDetailView','nominaView','workerFormView','noteFormView','workerDetailView','notasView'].forEach(v=>document.getElementById(v).classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  tabHome.classList.toggle('active',id==='homeView');
-  tabBit.classList.toggle('active',id.startsWith('bit'));
-  tabNomina.classList.toggle('active',id==='nominaView'||id==='workerDetailView');
-  tabNotas.classList.toggle('active',id==='notasView');
-  viewTitle.textContent=id==='homeView'?'VALEPAC Admin':id.startsWith('bit')?'Bitácora':id==='nominaView'||id==='workerDetailView'?'Nómina de Atendedores':'Historial de Anotaciones';
+function renderHome(){
+  if(document.getElementById('kSec'))kSec.textContent=docs.length;
+  if(document.getElementById('kBit'))kBit.textContent=bits.length;
+  if(document.getElementById('kVna'))kVna.textContent=vnas.length;
+  if(document.getElementById('kTickets'))kTickets.textContent=tickets.filter(t=>t.estado!=='Atendido').length;
+  if(document.getElementById('kAt'))kAt.textContent=workers.filter(w=>(w.estado||'Activo')==='Activo').length;
+  if(document.getElementById('kNotas'))kNotas.textContent=notes.length;
+}
+function showView(id){
+  const map={secView:'sec',secDetailView:'sec',bitView:'bitacora',bitFormView:'bitacora',bitDetailView:'bitacora',vnaView:'vna',vnaFormView:'vna',vnaDetailView:'vna',ticketView:'ticket_atendedor',ticketFormView:'ticket_atendedor',ticketDetailView:'ticket_atendedor',nominaView:'nomina',workerFormView:'nomina',noteFormView:'historial_anotaciones',workerDetailView:'nomina',notasView:'historial_anotaciones'};
+  if(map[id]&&!hasModule(map[id])){alert('Usuario sin acceso a este módulo.');return;}
+  ['homeView','secView','secDetailView','bitView','bitFormView','bitDetailView','vnaView','vnaFormView','vnaDetailView','ticketView','ticketFormView','ticketDetailView','nominaView','workerFormView','noteFormView','workerDetailView','notasView'].forEach(v=>document.getElementById(v)?.classList.add('hidden'));
+  document.getElementById(id)?.classList.remove('hidden');
+  tabHome?.classList.toggle('active',id==='homeView');
+  tabSec?.classList.toggle('active',id.startsWith('sec'));
+  tabBit?.classList.toggle('active',id.startsWith('bit'));
+  tabVna?.classList.toggle('active',id.startsWith('vna'));
+  tabTicket?.classList.toggle('active',id.startsWith('ticket'));
+  tabNomina?.classList.toggle('active',id==='nominaView'||id==='workerDetailView');
+  tabNotas?.classList.toggle('active',id==='notasView'||id==='noteFormView');
+  viewTitle.textContent=id==='homeView'?'VALEPAC Admin':id.startsWith('sec')?'SEC':id.startsWith('bit')?'Bitácora':id.startsWith('vna')?'VNA':id.startsWith('ticket')?'Ticket Atendedor':id==='nominaView'||id==='workerDetailView'?'Nómina de Atendedores':'Historial de Anotaciones';
+}
+
+/* SEC / VNA / TICKET */
+async function loadSecDocs(){
+  const {data,error}=await client.from('documentos').select('*').order('numero_indice');
+  if(error){secList.innerHTML='<div class="msg error">'+error.message+'</div>';return}
+  docs=(data||[]).sort((a,b)=>String(a.numero_indice||'').localeCompare(String(b.numero_indice||''),'es',{numeric:true}));
+  renderSecDocs();renderHome();
+}
+function renderSecDocs(){
+  const q=(secSearch?.value||'').toLowerCase();
+  const list=docs.filter(d=>`${d.numero_indice||''} ${d.nombre||''} ${d.categoria||''} ${d.estado||''}`.toLowerCase().includes(q));
+  secList.innerHTML=list.map(d=>`<div class="card" onclick="openSecDoc(${d.id})"><div class="title">${d.numero_indice||''} · ${d.nombre||'-'}</div><div class="sub">${d.categoria||'-'} · Vence: ${d.fecha_vencimiento||'Sin fecha'}</div><div style="margin-top:8px">${badge(d.estado)}</div></div>`).join('')||'<div class="empty">Sin documentos.</div>';
+}
+function openSecDoc(id){
+  selectedDoc=docs.find(d=>d.id===id); if(!selectedDoc)return;
+  const d=selectedDoc;
+  secDetail.innerHTML=`<div class="card"><h2 style="margin-top:0">${d.nombre||'Documento'}</h2>${badge(d.estado)}<p><b>N°:</b> ${d.numero_indice||'-'}</p><p><b>Categoría:</b> ${d.categoria||'-'}</p><p><b>Vencimiento:</b> ${d.fecha_vencimiento||'Sin fecha'}</p><p><b>Archivo:</b> ${d.archivo_url?`<a target="_blank" href="${d.archivo_url}">Ver PDF</a>`:'No cargado'}</p><label>Nuevo PDF</label><input id="secPdf" type="file" accept="application/pdf"/><label>Fecha vencimiento</label><input id="secDue" type="date" value="${d.fecha_vencimiento||''}"/><label>Días alerta</label><input id="secAlert" type="number" value="${d.dias_alerta||30}"/><button data-create-action class="primary" onclick="uploadSecPdf(${d.id})">Subir PDF</button><div id="secMsg"></div></div>`;
+  applyPermissions();showView('secDetailView');
+}
+function daysLeft(d){if(!d)return null;const a=new Date();a.setHours(0,0,0,0);const b=new Date(d);b.setHours(0,0,0,0);return Math.ceil((b-a)/86400000)}
+function calcDocStatus(d,alertDays,hasFile){if(!hasFile)return 'No cargado';if(!d)return 'En Proceso';const rest=daysLeft(d);if(rest<0)return 'Vencido';if(rest<=Number(alertDays||30))return 'Por vencer';return 'Vigente'}
+async function uploadSecPdf(id){
+  if(!canAction('subir_archivos')){msg(secMsg,'Usuario sin permiso para subir archivos.','error');return}
+  const file=secPdf.files[0], due=secDue.value, alertDays=secAlert.value||30;
+  if(!file||!due){msg(secMsg,'Selecciona PDF y fecha de vencimiento.','error');return}
+  const path=`sec/mobile/${id}_${Date.now()}_${safeFileName(file.name)}`;
+  const up=await client.storage.from(bucket).upload(path,file,{upsert:true});
+  if(up.error){msg(secMsg,up.error.message,'error');return}
+  const url=client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  const estado=calcDocStatus(due,alertDays,true),rest=daysLeft(due);
+  const {error}=await client.from('documentos').update({archivo_url:url,archivo_nombre:file.name,fecha_vencimiento:due,dias_alerta:Number(alertDays),dias_restantes:rest,alerta_activa:estado==='Por vencer'||estado==='Vencido',estado,updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){msg(secMsg,error.message,'error');return}
+  msg(secMsg,'PDF cargado correctamente.'); await loadSecDocs(); openSecDoc(id);
+}
+
+async function loadVna(){
+  const {data,error}=await client.from('ventas_no_abonadas').select('*').order('created_at',{ascending:false});
+  if(error){vnaList.innerHTML='<div class="msg error">'+error.message+'</div>';return}
+  vnas=data||[]; renderVna(); renderHome();
+}
+function renderVna(){
+  const q=(vnaSearch?.value||'').toLowerCase();
+  const list=vnas.filter(v=>`${v.requerimiento||''} ${v.folio_dte||''} ${v.nombre_conductor||''} ${v.rut_conductor||''} ${v.atendedor||''} ${v.etapa||''}`.toLowerCase().includes(q));
+  vnaList.innerHTML=list.map(v=>`<div class="card" onclick="openVna(${v.id})"><div class="title">Req. ${v.requerimiento||'-'}</div><div class="sub">${v.nombre_conductor||'-'} · ${fmt(v.fecha_hora||v.created_at)}</div><div style="margin-top:8px">${badge(v.etapa)}</div></div>`).join('')||'<div class="empty">Sin VNA.</div>';
+}
+function showVnaForm(){if(!canAction('crear')){alert('Usuario sin permiso para crear.');return}showView('vnaFormView')}
+async function createVna(){
+  if(!canAction('crear')){msg(vnaMsg,'Usuario sin permiso para crear.','error');return}
+  let archivo_url=null,archivo_nombre=null;const file=vnaArchivoInicial.files[0];
+  if(file){const path=`vta-no-abonada/mobile/${Date.now()}_${safeFileName(file.name)}`;const up=await client.storage.from(bucket).upload(path,file,{upsert:true});if(up.error){msg(vnaMsg,up.error.message,'error');return}archivo_url=client.storage.from(bucket).getPublicUrl(path).data.publicUrl;archivo_nombre=file.name}
+  const payload={requerimiento:vnaReq.value.trim(),surtidor:vnaSurtidor.value,folio_dte:vnaFolioDte.value,monto:vnaMonto.value||null,producto:vnaProducto.value,medio_pago:vnaMedioPago.value,fecha_hora:vnaFechaHora.value||null,atendedor:vnaAtendedor.value,nombre_conductor:vnaNombreConductor.value,rut_conductor:vnaRutConductor.value,detalle:vnaDetalle.value,etapa:'Ingresado',resolucion:'Pendiente',archivo_url,archivo_nombre};
+  if(!payload.requerimiento){msg(vnaMsg,'Falta N° requerimiento.','error');return}
+  const {data,error}=await client.from('ventas_no_abonadas').insert(payload).select().single();
+  if(error){msg(vnaMsg,error.message,'error');return}
+  await client.from('historial_vta_no_abonada').insert({caso_id:data.id,accion:'Caso ingresado Admin Mobile',etapa:'Ingresado',usuario:currentUser?.nombre||'Usuario',comentario:payload.detalle,archivo_url,archivo_nombre});
+  msg(vnaMsg,'VNA guardado.'); await loadVna(); setTimeout(()=>showView('vnaView'),500);
+}
+async function openVna(id){
+  selectedVna=vnas.find(v=>v.id===id); if(!selectedVna)return;
+  const {data}=await client.from('historial_vta_no_abonada').select('*').eq('caso_id',id).order('created_at',{ascending:false}); vnaHist=data||[];
+  const v=selectedVna;
+  vnaDetail.innerHTML=`<div class="card"><h2 style="margin-top:0">Req. ${v.requerimiento||'-'}</h2>${badge(v.etapa)}<p><b>Conductor:</b> ${v.nombre_conductor||'-'} · ${v.rut_conductor||'-'}</p><p><b>Venta:</b> ${v.producto||'-'} · $${v.monto||'-'} · Folio ${v.folio_dte||'-'}</p><p><b>Detalle:</b> ${v.detalle||'-'}</p>${v.archivo_url?`<p><a target="_blank" href="${v.archivo_url}">Ver respaldo inicial</a></p>`:''}<label>Nuevo estado</label><select id="vnaNewEstado"><option>Ingresado</option><option>Documentación y respaldo</option><option>Aprobado</option><option>Rechazado</option><option>Atendido</option></select><label>Comentario</label><textarea id="vnaComentario"></textarea><button class="primary" onclick="addVnaProgress(${v.id})">Guardar avance</button><div id="vnaHistMsg"></div></div><div class="card"><h3>Historial</h3>${vnaHist.map(h=>`<div class="item"><b>${h.accion||'-'}</b><div class="sub">${fmt(h.created_at)} · ${h.usuario||'-'} · ${h.etapa||''}</div><p>${h.comentario||''}</p>${h.archivo_url?`<a target="_blank" href="${h.archivo_url}">Ver archivo</a>`:''}</div>`).join('')||'<div class="empty">Sin historial.</div>'}</div>`;
+  vnaNewEstado.value=v.etapa||'Ingresado'; showView('vnaDetailView');
+}
+async function addVnaProgress(id){
+  if(!canAction('cambiar_estado')){msg(vnaHistMsg,'Usuario sin permiso para cambiar estado.','error');return}
+  const etapa=vnaNewEstado.value;
+  const {error}=await client.from('ventas_no_abonadas').update({etapa,updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){msg(vnaHistMsg,error.message,'error');return}
+  await client.from('historial_vta_no_abonada').insert({caso_id:id,accion:'Avance Admin Mobile',etapa,usuario:currentUser?.nombre||'Usuario',comentario:vnaComentario.value});
+  msg(vnaHistMsg,'Avance guardado.'); await loadVna(); await openVna(id);
+}
+
+function fillTicketWorkers(){if(!document.getElementById('ticketAtendedor'))return;ticketAtendedor.innerHTML='<option value="">Seleccionar atendedor</option>'+workers.filter(w=>(w.estado||'Activo')==='Activo').map(w=>`<option value="${w.id}">${w.nombre} · ${w.rut}</option>`).join('')}
+async function loadTickets(){
+  if(!workers.length)await loadNomina();
+  const {data,error}=await client.from('tickets_atendedor').select('*, atendedores_nomina(nombre,rut)').order('fecha_solicitud',{ascending:false});
+  if(error){ticketList.innerHTML='<div class="msg error">'+error.message+'</div>';return}
+  tickets=data||[]; fillTicketWorkers(); renderTickets(); renderHome();
+}
+function renderTickets(){
+  const q=(ticketSearch?.value||'').toLowerCase();
+  const list=tickets.filter(t=>`${t.titulo||''} ${t.tipo||''} ${t.estado||''} ${t.atendedores_nomina?.nombre||''} ${t.atendedores_nomina?.rut||''}`.toLowerCase().includes(q));
+  ticketList.innerHTML=list.map(t=>`<div class="card" onclick="openTicket(${t.id})"><div class="title">${t.titulo||'Ticket'}</div><div class="sub">${t.atendedores_nomina?.nombre||'-'} · ${fmt(t.fecha_solicitud||t.created_at)}</div><div style="margin-top:8px">${badge(t.estado)} ${badge(t.prioridad)}</div></div>`).join('')||'<div class="empty">Sin tickets.</div>';
+}
+function showTicketForm(){if(!canAction('crear')){alert('Usuario sin permiso para crear.');return}fillTicketWorkers();showView('ticketFormView')}
+async function createTicket(){
+  if(!canAction('crear')){msg(ticketMsg,'Usuario sin permiso para crear.','error');return}
+  const trabajador_id=ticketAtendedor.value||null,titulo=ticketTitulo.value.trim(); if(!trabajador_id||!titulo){msg(ticketMsg,'Falta atendedor o título.','error');return}
+  let archivo_url=null,archivo_nombre=null;const file=ticketArchivo.files[0];
+  if(file){const path=`ticket-atendedor/mobile/${trabajador_id}/${Date.now()}_${safeFileName(file.name)}`;const up=await client.storage.from(bucket).upload(path,file,{upsert:true});if(up.error){msg(ticketMsg,up.error.message,'error');return}archivo_url=client.storage.from(bucket).getPublicUrl(path).data.publicUrl;archivo_nombre=file.name}
+  const payload={trabajador_id,tipo:ticketTipo.value,prioridad:ticketPrioridad.value,fecha_solicitud:new Date().toISOString(),estado:'Ingresado',responsable:currentUser?.nombre||'',titulo,detalle:ticketDetalle.value,archivo_url,archivo_nombre,updated_at:new Date().toISOString()};
+  const {data,error}=await client.from('tickets_atendedor').insert(payload).select().single(); if(error){msg(ticketMsg,error.message,'error');return}
+  await client.from('historial_ticket_atendedor').insert({ticket_id:data.id,accion:'Ticket ingresado Admin Mobile',estado:'Ingresado',usuario:currentUser?.nombre||'Usuario',comentario:payload.detalle,archivo_url,archivo_nombre});
+  msg(ticketMsg,'Ticket guardado.'); await loadTickets(); setTimeout(()=>showView('ticketView'),500);
+}
+async function openTicket(id){
+  selectedTicket=tickets.find(t=>t.id===id); if(!selectedTicket)return;
+  const {data}=await client.from('historial_ticket_atendedor').select('*').eq('ticket_id',id).order('created_at',{ascending:false}); ticketHist=data||[];
+  const t=selectedTicket;
+  ticketDetail.innerHTML=`<div class="card"><h2 style="margin-top:0">${t.titulo||'Ticket'}</h2>${badge(t.estado)}<p><b>Atendedor:</b> ${t.atendedores_nomina?.nombre||'-'} · ${t.atendedores_nomina?.rut||'-'}</p><p><b>Tipo:</b> ${t.tipo||'-'} · ${t.prioridad||'Normal'}</p><p><b>Detalle:</b> ${t.detalle||'-'}</p>${t.archivo_url?`<p><a target="_blank" href="${t.archivo_url}">Ver respaldo inicial</a></p>`:''}<label>Cambiar estado</label><select id="ticketNewEstado"><option>Ingresado</option><option>En Proceso</option><option>Aprobado</option><option>Rechazado</option><option>Atendido</option></select><label>Comentario</label><textarea id="ticketComentario"></textarea><button class="primary" onclick="changeTicketStatus(${t.id})">Guardar cambio</button><div id="ticketHistMsg"></div></div><div class="card"><h3>Historial</h3>${ticketHist.map(h=>`<div class="item"><b>${h.accion||'-'}</b><div class="sub">${fmt(h.created_at)} · ${h.usuario||'-'} · ${h.estado||''}</div><p>${h.comentario||''}</p>${h.archivo_url?`<a target="_blank" href="${h.archivo_url}">Ver archivo</a>`:''}</div>`).join('')||'<div class="empty">Sin historial.</div>'}</div>`;
+  ticketNewEstado.value=t.estado||'Ingresado'; showView('ticketDetailView');
+}
+async function changeTicketStatus(id){
+  if(!canAction('cambiar_estado')){msg(ticketHistMsg,'Usuario sin permiso para cambiar estado.','error');return}
+  const estado=ticketNewEstado.value;
+  const {error}=await client.from('tickets_atendedor').update({estado,updated_at:new Date().toISOString()}).eq('id',id); if(error){msg(ticketHistMsg,error.message,'error');return}
+  await client.from('historial_ticket_atendedor').insert({ticket_id:id,accion:'Cambio estado Admin Mobile',estado,usuario:currentUser?.nombre||'Usuario',comentario:ticketComentario.value});
+  msg(ticketHistMsg,'Estado actualizado.'); await loadTickets(); await openTicket(id);
 }
 
 /* BITÁCORA */
@@ -448,6 +628,7 @@ async function loadNomina(){
   workers=data||[];
   renderNomina();
   fillWorkerSelect();
+  try{fillTicketWorkers()}catch(e){}
   renderHome();
 }
 function renderNomina(){
