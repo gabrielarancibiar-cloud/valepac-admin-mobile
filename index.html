@@ -76,7 +76,7 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
 </section>
 
 <section id="bitView" class="hidden">
-  <div class="actions two"><button class="primary" onclick="showBitForm()">Nuevo evento</button><button class="secondary" onclick="loadBitacora()">Actualizar</button></div>
+  <div class="actions two"><button data-create-action class="primary" onclick="showBitForm()">Nuevo evento</button><button class="secondary" onclick="loadBitacora()">Actualizar</button></div>
   <div id="bitList" style="margin-top:14px"></div>
 </section>
 
@@ -127,6 +127,15 @@ const bucket='documentos-sec';
 let currentUser=null,bits=[],bitHist=[],workers=[],notes=[];
 
 
+function hasPlatform(p){
+  return !!(currentUser?.permisos?.plataformas?.[p] || currentUser?.permisos?.[p]);
+}
+function hasModule(m){
+  return !!(currentUser?.permisos?.modulos?.[m] || currentUser?.permisos?.[m]);
+}
+function canAction(a){
+  return !!(currentUser?.permisos?.acciones?.[a] || currentUser?.permisos?.[a]);
+}
 function saveSession(){
   if(currentUser)localStorage.setItem('valepac_admin_mobile_session',JSON.stringify(currentUser));
 }
@@ -140,6 +149,7 @@ function restoreSession(){
     currentUser=JSON.parse(raw);
     login.classList.add('hidden');
     app.classList.remove('hidden');
+    applyPermissions();
     loadAll();
     return true;
   }catch(e){
@@ -155,21 +165,17 @@ async function loginApp(){
     loginMsg.innerHTML='<div class="msg error">'+error.message+'</div>';
     return;
   }
-  if(user && p===user.password && (user.permisos?.admin_mobile || user.rol==='Administrador')){
+  if(user && p===user.password){
     currentUser={usuario:user.usuario,nombre:user.nombre||user.usuario,rol:user.rol,permisos:user.permisos||{}};
-    saveSession();
-    login.classList.add('hidden');
-    app.classList.remove('hidden');
-    loadAll();
-    return;
-  }
-  if(u==='gabrielarancibia'&&p==='portalvalepac'){
-    currentUser={usuario:'gabrielarancibia',nombre:'Gabriel Arancibia',rol:'Administrador',permisos:{admin_mobile:true,bitacora:true,nomina:true,historial_anotaciones:true}};
-    saveSession();
-    login.classList.add('hidden');
-    app.classList.remove('hidden');
-    loadAll();
-    return;
+    const hasAnyMobileModule=hasModule('bitacora')||hasModule('nomina')||hasModule('historial_anotaciones');
+    if(hasPlatform('admin_mobile') && hasAnyMobileModule){
+      saveSession();
+      login.classList.add('hidden');
+      app.classList.remove('hidden');
+      applyPermissions();
+      loadAll();
+      return;
+    }
   }
   loginMsg.innerHTML='<div class="msg error">Usuario sin permiso o contraseña incorrecta.</div>';
 }
@@ -179,13 +185,32 @@ function safeFileName(n){return String(n||'archivo').normalize('NFD').replace(/[
 function msg(el,t,c='ok'){el.innerHTML=`<div class="msg ${c}">${t}</div>`}
 function badge(s){let c='';if(['Alta','Negativa'].includes(s))c=' b-red';if(['Positiva','Atendido','Cerrado','Activo'].includes(s))c=' b-green';if(['Media','En seguimiento'].includes(s))c=' b-yellow';return `<span class="badge${c}">${s||'-'}</span>`}
 
-async function loadAll(){await Promise.all([loadBitacora(),loadNomina(),loadNotas()]);renderHome()}
+
+function applyPermissions(){
+  const bitAllowed=hasModule('bitacora');
+  const nominaAllowed=hasModule('nomina');
+  const notasAllowed=hasModule('historial_anotaciones');
+
+  tabBit.style.display=bitAllowed?'block':'none';
+  tabNomina.style.display=nominaAllowed?'block':'none';
+  tabNotas.style.display=notasAllowed?'block':'none';
+
+  const tiles=document.querySelectorAll('.tile');
+  if(tiles[0])tiles[0].style.display=bitAllowed?'block':'none';
+  if(tiles[1])tiles[1].style.display=nominaAllowed?'block':'none';
+  if(tiles[2])tiles[2].style.display=notasAllowed?'block':'none';
+
+  const canCreate=canAction('crear');
+  document.querySelectorAll('[data-create-action]').forEach(el=>el.style.display=canCreate?'block':'none');
+}
+
+async function loadAll(){const jobs=[];if(hasModule('bitacora'))jobs.push(loadBitacora());if(hasModule('nomina'))jobs.push(loadNomina());if(hasModule('historial_anotaciones'))jobs.push(loadNotas());await Promise.all(jobs);renderHome()}
 function renderHome(){
   kBit.textContent=bits.filter(b=>!['Cerrado','Atendido'].includes(b.estado)).length;
   kAt.textContent=workers.filter(w=>(w.estado||'Activo')==='Activo').length;
   kNotas.textContent=notes.length;
 }
-function showView(id){
+function showView(id){const map={bitView:'bitacora',bitFormView:'bitacora',bitDetailView:'bitacora',nominaView:'nomina',workerDetailView:'nomina',notasView:'historial_anotaciones'};if(map[id]&&!hasModule(map[id])){alert('Usuario sin acceso a este módulo.');return;}
   ['homeView','bitView','bitFormView','bitDetailView','nominaView','workerDetailView','notasView'].forEach(v=>document.getElementById(v).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   tabHome.classList.toggle('active',id==='homeView');
@@ -214,7 +239,7 @@ function showBitForm(){
   bitEstado.value='Abierto';
   bitGravedad.value='Baja';
 }
-async function createBitacora(){
+async function createBitacora(){if(!canAction('crear')){msg(bitMsg,'Usuario sin permiso para crear.','error');return;}
   let archivo_url=null,archivo_nombre=null;
   const file=bitArchivo.files[0];
   if(file){
@@ -242,7 +267,7 @@ async function openBit(id){
   bitNewEstado.value=b.estado||'Abierto';
   showView('bitDetailView');
 }
-async function addBitHist(id){
+async function addBitHist(id){if(!canAction('crear')){msg(bitHistMsg,'Usuario sin permiso para agregar seguimiento.','error');return;}
   let archivo_url=null,archivo_nombre=null;
   const file=bitHistFile.files[0];
   if(file){
