@@ -97,9 +97,46 @@ a{color:#2563eb;font-weight:900;text-decoration:none}
 <section id="bitDetailView" class="hidden"><div id="bitDetail"></div></section>
 
 <section id="nominaView" class="hidden">
-  <div class="actions two"><button class="secondary" onclick="loadNomina()">Actualizar</button><button class="ghost" onclick="showView('homeView')">Inicio</button></div>
+  <div class="actions two">
+    <button data-create-action class="primary" onclick="showWorkerForm()">Agregar atendedor</button>
+    <button data-create-action class="secondary" onclick="showNoteForm()">Nueva anotación</button>
+  </div>
+  <div class="actions two">
+    <button class="secondary" onclick="loadNomina()">Actualizar</button>
+    <button class="ghost" onclick="showView('homeView')">Inicio</button>
+  </div>
   <input id="workerSearch" placeholder="Buscar atendedor" oninput="renderNomina()" style="margin:14px 0"/>
   <div id="workerList"></div>
+</section>
+
+<section id="workerFormView" class="hidden">
+  <div class="card">
+    <h2 style="margin-top:0">Agregar atendedor</h2>
+    <label>Nombre</label><input id="workerNombre" placeholder="Nombre completo"/>
+    <label>RUT</label><input id="workerRut" placeholder="12.345.678-9"/>
+    <label>Fecha ingreso EDS</label><input id="workerFechaIngreso" type="date"/>
+    <label>Foto</label><input id="workerFoto" type="file" accept=".jpg,.jpeg,.png,.webp,image/*" capture="environment"/>
+    <button class="primary" onclick="createWorker()">Guardar atendedor</button>
+    <button class="secondary" onclick="clearWorkerForm()" style="margin-top:10px;width:100%">Limpiar campos</button>
+    <div id="workerMsg"></div>
+  </div>
+</section>
+
+<section id="noteFormView" class="hidden">
+  <div class="card">
+    <h2 style="margin-top:0">Nueva anotación</h2>
+    <label>Trabajador</label><select id="noteTrabajador"></select>
+    <label>Tipo</label><select id="noteTipo"><option>Positiva</option><option>Negativa</option></select>
+    <label>Fecha y hora</label><input id="noteFecha" type="datetime-local"/>
+    <label>Título</label><input id="noteTitulo" placeholder="Ej: Excelente protocolo de atención"/>
+    <label>Categoría</label><select id="noteCategoria"><option>Protocolo de atención</option><option>Servicio al cliente</option><option>Presentación personal</option><option>Puntualidad</option><option>Trabajo en equipo</option><option>Seguridad</option><option>Operación</option><option>Otro</option></select>
+    <label>Detalle</label><textarea id="noteDetalle" placeholder="Describe la situación de forma objetiva"></textarea>
+    <label>Acción / seguimiento</label><textarea id="noteAccion" placeholder="Compromiso, retroalimentación o seguimiento"></textarea>
+    <label>Respaldo: foto o archivo</label><input id="noteArchivo" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,.xlsx,.xls" capture="environment"/>
+    <button class="primary" onclick="createNote()">Guardar anotación</button>
+    <button class="secondary" onclick="clearNoteForm()" style="margin-top:10px;width:100%">Limpiar campos</button>
+    <div id="noteMsg"></div>
+  </div>
 </section>
 
 <section id="workerDetailView" class="hidden"><div id="workerDetail"></div></section>
@@ -210,8 +247,8 @@ function renderHome(){
   kAt.textContent=workers.filter(w=>(w.estado||'Activo')==='Activo').length;
   kNotas.textContent=notes.length;
 }
-function showView(id){const map={bitView:'bitacora',bitFormView:'bitacora',bitDetailView:'bitacora',nominaView:'nomina',workerDetailView:'nomina',notasView:'historial_anotaciones'};if(map[id]&&!hasModule(map[id])){alert('Usuario sin acceso a este módulo.');return;}
-  ['homeView','bitView','bitFormView','bitDetailView','nominaView','workerDetailView','notasView'].forEach(v=>document.getElementById(v).classList.add('hidden'));
+function showView(id){const map={bitView:'bitacora',bitFormView:'bitacora',bitDetailView:'bitacora',nominaView:'nomina',workerFormView:'nomina',noteFormView:'historial_anotaciones',workerDetailView:'nomina',notasView:'historial_anotaciones'};if(map[id]&&!hasModule(map[id])){alert('Usuario sin acceso a este módulo.');return;}
+  ['homeView','bitView','bitFormView','bitDetailView','nominaView','workerFormView','noteFormView','workerDetailView','notasView'].forEach(v=>document.getElementById(v).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   tabHome.classList.toggle('active',id==='homeView');
   tabBit.classList.toggle('active',id.startsWith('bit'));
@@ -285,12 +322,105 @@ async function addBitHist(id){if(!canAction('crear')){msg(bitHistMsg,'Usuario si
   await openBit(id);
 }
 
+
+function fillWorkerSelect(){
+  if(!document.getElementById('noteTrabajador'))return;
+  noteTrabajador.innerHTML='<option value="">Seleccionar trabajador</option>'+workers.filter(w=>(w.estado||'Activo')==='Activo').map(w=>`<option value="${w.id}">${w.nombre} · ${w.rut||''}</option>`).join('');
+}
+function showWorkerForm(){
+  if(!canAction('crear')){alert('Usuario sin permiso para crear.');return}
+  clearWorkerForm();
+  showView('workerFormView');
+}
+function clearWorkerForm(){
+  workerNombre.value='';
+  workerRut.value='';
+  workerFechaIngreso.value='';
+  workerFoto.value='';
+  workerMsg.innerHTML='';
+}
+async function createWorker(){
+  if(!canAction('crear')){msg(workerMsg,'Usuario sin permiso para crear.','error');return}
+  const nombre=workerNombre.value.trim();
+  const rut=workerRut.value.trim();
+  if(!nombre||!rut){msg(workerMsg,'Falta nombre o RUT.','error');return}
+  let foto_url=null,foto_nombre=null;
+  const file=workerFoto.files[0];
+  if(file){
+    const path=`desempeno-at/nomina-mobile/${Date.now()}_${safeFileName(file.name)}`;
+    const up=await client.storage.from(bucket).upload(path,file,{upsert:true});
+    if(up.error){msg(workerMsg,up.error.message,'error');return}
+    foto_url=client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+    foto_nombre=file.name;
+  }
+  const payload={nombre,rut,fecha_ingreso:workerFechaIngreso.value||null,foto_url,foto_nombre,estado:'Activo',updated_at:new Date().toISOString()};
+  const {error}=await client.from('atendedores_nomina').insert(payload);
+  if(error){msg(workerMsg,error.message,'error');return}
+  msg(workerMsg,'Atendedor guardado correctamente.','ok');
+  clearWorkerForm();
+  await loadNomina();
+  setTimeout(()=>showView('nominaView'),500);
+}
+function showNoteForm(){
+  if(!canAction('crear')){alert('Usuario sin permiso para crear.');return}
+  clearNoteForm();
+  fillWorkerSelect();
+  showView('noteFormView');
+}
+function clearNoteForm(){
+  fillWorkerSelect();
+  noteTrabajador.value='';
+  noteTipo.value='Positiva';
+  noteFecha.value='';
+  noteTitulo.value='';
+  noteCategoria.value='Protocolo de atención';
+  noteDetalle.value='';
+  noteAccion.value='';
+  noteArchivo.value='';
+  noteMsg.innerHTML='';
+}
+async function createNote(){
+  if(!canAction('crear')){msg(noteMsg,'Usuario sin permiso para crear.','error');return}
+  const trabajador_id=noteTrabajador.value;
+  const titulo=noteTitulo.value.trim();
+  if(!trabajador_id||!titulo){msg(noteMsg,'Falta trabajador o título.','error');return}
+  let archivo_url=null,archivo_nombre=null;
+  const file=noteArchivo.files[0];
+  if(file){
+    const path=`desempeno-at/anotaciones-mobile/${Date.now()}_${safeFileName(file.name)}`;
+    const up=await client.storage.from(bucket).upload(path,file,{upsert:true});
+    if(up.error){msg(noteMsg,up.error.message,'error');return}
+    archivo_url=client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+    archivo_nombre=file.name;
+  }
+  const payload={
+    trabajador_id,
+    tipo:noteTipo.value,
+    fecha_anotacion:noteFecha.value||new Date().toISOString(),
+    responsable:currentUser?.nombre||'Usuario',
+    titulo,
+    categoria:noteCategoria.value,
+    detalle:noteDetalle.value,
+    accion:noteAccion.value,
+    archivo_url,
+    archivo_nombre
+  };
+  const {error}=await client.from('anotaciones_desempeno_at').insert(payload);
+  if(error){msg(noteMsg,error.message,'error');return}
+  msg(noteMsg,'Anotación guardada correctamente.','ok');
+  clearNoteForm();
+  await loadNotas();
+  await loadNomina();
+  setTimeout(()=>showView('notasView'),500);
+}
+
 /* NÓMINA */
 async function loadNomina(){
   const {data,error}=await client.from('atendedores_nomina').select('*').order('nombre',{ascending:true});
   if(error){workerList.innerHTML='<div class="msg error">'+error.message+'</div>';return}
   workers=data||[];
   renderNomina();
+  fillWorkerSelect();
   renderHome();
 }
 function renderNomina(){
@@ -312,6 +442,7 @@ async function loadNotas(){
   if(error){noteList.innerHTML='<div class="msg error">'+error.message+'</div>';return}
   notes=data||[];
   renderNotas();
+  fillWorkerSelect();
   renderHome();
 }
 function renderNotas(){
