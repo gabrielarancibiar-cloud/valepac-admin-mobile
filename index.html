@@ -8,7 +8,8 @@
 <meta name="theme-color" content="#0b2f5b"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="VALEPAC Admin"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">window.addEventListener('load',()=>restoreSession());
+</script>
 <style>
 :root{--blue:#0b2f5b;--blue2:#2563eb;--cyan:#38bdf8;--bg:#eef4fb;--text:#0f172a;--muted:#64748b;--border:#dbe7f3}
 *{box-sizing:border-box}
@@ -125,19 +126,54 @@ const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const bucket='documentos-sec';
 let currentUser=null,bits=[],bitHist=[],workers=[],notes=[];
 
-function loginApp(){
+
+function saveSession(){
+  if(currentUser)localStorage.setItem('valepac_admin_mobile_session',JSON.stringify(currentUser));
+}
+function clearSession(){
+  localStorage.removeItem('valepac_admin_mobile_session');
+}
+function restoreSession(){
+  try{
+    const raw=localStorage.getItem('valepac_admin_mobile_session');
+    if(!raw)return false;
+    currentUser=JSON.parse(raw);
+    login.classList.add('hidden');
+    app.classList.remove('hidden');
+    loadAll();
+    return true;
+  }catch(e){
+    clearSession();
+    return false;
+  }
+}
+async function loginApp(){
   const u=(loginUser.value||'').trim().toLowerCase();
   const p=(loginPass.value||'').trim();
-  if(u==='gabrielarancibia'&&p==='portalvalepac'){
-    currentUser={nombre:'Gabriel Arancibia',usuario:'gabrielarancibia'};
+  const {data:user,error}=await client.from('usuarios_portal').select('*').eq('usuario',u).eq('estado','Activo').maybeSingle();
+  if(error){
+    loginMsg.innerHTML='<div class="msg error">'+error.message+'</div>';
+    return;
+  }
+  if(user && p===user.password && (user.permisos?.admin_mobile || user.rol==='Administrador')){
+    currentUser={usuario:user.usuario,nombre:user.nombre||user.usuario,rol:user.rol,permisos:user.permisos||{}};
+    saveSession();
     login.classList.add('hidden');
     app.classList.remove('hidden');
     loadAll();
     return;
   }
-  loginMsg.innerHTML='<div class="msg error">Usuario o contraseña incorrectos.</div>';
+  if(u==='gabrielarancibia'&&p==='portalvalepac'){
+    currentUser={usuario:'gabrielarancibia',nombre:'Gabriel Arancibia',rol:'Administrador',permisos:{admin_mobile:true,bitacora:true,nomina:true,historial_anotaciones:true}};
+    saveSession();
+    login.classList.add('hidden');
+    app.classList.remove('hidden');
+    loadAll();
+    return;
+  }
+  loginMsg.innerHTML='<div class="msg error">Usuario sin permiso o contraseña incorrecta.</div>';
 }
-function logout(){location.reload()}
+function logout(){clearSession();location.reload()}
 function fmt(d){if(!d)return'-';return new Date(d).toLocaleString('es-CL',{dateStyle:'short',timeStyle:'short'})}
 function safeFileName(n){return String(n||'archivo').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_')}
 function msg(el,t,c='ok'){el.innerHTML=`<div class="msg ${c}">${t}</div>`}
@@ -261,6 +297,7 @@ function renderNotas(){
 }
 
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}))}
+window.addEventListener('load',()=>restoreSession());
 </script>
 </body>
 </html>
